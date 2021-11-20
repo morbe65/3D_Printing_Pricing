@@ -25,47 +25,21 @@ window= tk.Tk()
 window.title("3D Printing Pricing")
 
 
-def main_callback():
-    return "Menu"
-def subpage_callback():
-    return "Submenu"
-def stored_filaments():
-    print("stored")
-    return "Stored"
-def insert_filament():
-    print("insert")
-
-subpages=tk.Menu()
-subpages.add_command(label="Filament 1", command= subpage_callback)
-
-main=tk.Menu()
-main.add_command(label="Main",command=main_callback)
-main.add_cascade(label="Filaments", menu= subpages)
-main.add_command(label="Stored Filaments", command=stored_filaments)
-main.add_command(label="Insert Filament", command= insert_filament)
-window.configure(menu=main)
-
 #Filament Text
 f_purchase=tk.Label(window,text="Filament Purchase Price in $", font=("Helvetica 15 underline"))
-f_purchase.pack()
 #Filament Text Entry
 f_purchase_price=tk.Entry(width=20)
-f_purchase_price.pack()
 
 #Filament Mass Text
 f_mass_text=tk.Label(window,text="Filament Purchase Mass in g", font=("Helvetica 15 underline"))
-f_mass_text.pack()
 #Filament Text Entry
 f_mass=tk.Entry(width=23)
-f_mass.pack()
 
 
 #Mass text
 p_text_mass= tk.Label(window, text="Mass of Print in g", font=("Helvetica 15 underline"))
-p_text_mass.pack()
 #Mass Text Entry
 p_mass= tk.Entry(window, width= 16)
-p_mass.pack()
 
 #Print Time Text
 pTime_text=tk.Label(window, text="Print Time in mins", font=("Helvetica 15 underline"))
@@ -114,12 +88,13 @@ def price_of_print(outputs):
 
 #Function to call both data_retrieval and price_of_print
 def button_click():
-    data_retrieval(inputs)
-    price_of_print(outputs)
+    print("Clicked")    
+    # data_retrieval(inputs)
+    # price_of_print(outputs)
 
-    price_text.configure(text="Price of print: $"+str(round(outputs[0],2)))
-    cost_text.configure(text="Cost of print: $"+str(round(outputs[1],2)))
-    material_cost_text.configure(text="Print's Material Cost: $"+str(round(outputs[2],2)))
+    # price_text.configure(text="Price of print: $"+str(round(outputs[0],2)))
+    # cost_text.configure(text="Cost of print: $"+str(round(outputs[1],2)))
+    # material_cost_text.configure(text="Print's Material Cost: $"+str(round(outputs[2],2)))
 
 
 
@@ -130,6 +105,48 @@ enter_button.pack()
 price_text.pack()
 cost_text.pack()
 material_cost_text.pack()
+
+insert_filament_page_list=[f_purchase,f_purchase_price,f_mass_text,f_mass]
+insert_filament_page= classes.page()
+insert_filament_page.addWidget(insert_filament_page_list)
+
+
+
+
+pricing_page_list= [p_text_mass,p_mass,pTime_text,pTime,dTime_text,dTime,eWage_text,eWage,price_text,cost_text,material_cost_text]
+pricing_page= classes.page()
+pricing_page.addWidget(pricing_page_list)
+
+last_page=pricing_page
+
+
+def forget_last_page():
+    last_page.forgetWidgets()
+
+
+def main_callback():
+    return "Menu"
+def subpage_callback():
+    return "Submenu"
+def stored_filaments():
+    print("stored")
+    return "Stored"
+def insert_filament():
+    forget_last_page()
+    insert_filament_page.packWidgets()
+    global last_page
+    last_page=insert_filament_page
+
+print(last_page)
+subpages=tk.Menu()
+subpages.add_command(label="Filament 1", command= subpage_callback)
+
+main=tk.Menu()
+main.add_command(label="Main",command=main_callback)
+#main.add_cascade(label="Filaments", menu= subpages)
+main.add_command(label="Stored Filaments", command=stored_filaments)
+main.add_command(label="Insert Filament", command=insert_filament)
+window.configure(menu=main)
 
 
 
