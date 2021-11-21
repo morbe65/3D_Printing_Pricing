@@ -268,7 +268,7 @@ def insert_filament():
 
 
 main=tk.Menu()
-main.add_command(label="Main",command=main_callback)
+main.add_command(label="Pricer/Invoicer",command=main_callback)
 
 
 main.add_command(label="Stored Filaments", command=stored_filaments)
