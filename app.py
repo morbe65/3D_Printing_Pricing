@@ -1,26 +1,27 @@
 from pickle import EMPTY_LIST
 import pickle
 import tkinter as tk
-from tkinter.constants import END, OUTSIDE, ROUND
+from tkinter.constants import COMMAND, END, OUTSIDE, ROUND
 from typing import Sequence
 
 import classes
 
 
 
-#Variable Declarations
-filamentPrice=0
-filamentMass=0
+##Variable Declarations
+#Input Variables
 mass=0
 printTime=0
 designTime=0
 expectedWage=0
 inputs = [mass,printTime,designTime,expectedWage]
 
+#Output Varaibles
 price=0
 cost=0
 material_cost=0
 outputs=[price,cost,material_cost]
+
 
 #Creating the Tkinter window and naming it
 window= tk.Tk()
@@ -42,7 +43,7 @@ f_mass_text=tk.Label(window,text="Filament Purchase Mass in g", font=("Helvetica
 #Filament Text Entry
 f_mass=tk.Entry(width=20)
 
-
+#Saving inputed filament to data.pickle and list
 def save_filament():
     inputted_filament= classes.filament(f_name.get(),float(f_purchase_price.get()),float(f_mass.get()))
     f_name.delete(0,END)
@@ -64,6 +65,7 @@ stored_filament_entry=tk.Entry(width=38)
 stored_filament_entry.insert(0,"Which filament # would you like to delete?")
 saved_filaments_names=[]
 
+#Going through and updating saved filaments list
 def populate_stored_filaments(saved_filaments):
     if (len(saved_filaments) !=0):
         global saved_filaments_names
@@ -75,8 +77,10 @@ def populate_stored_filaments(saved_filaments):
     else:
         stored_filament_listbox.insert("No Filaments Saved")
 
+#Original Update
 populate_stored_filaments(saved_filaments)
 
+#Getting rid of filaments
 def clear_filaments():
     global saved_filaments
     if len(saved_filaments)>1:
@@ -86,8 +90,9 @@ def clear_filaments():
         populate_stored_filaments(saved_filaments)
     else:
         print("Need At Least One Type of Filament")
+    stored_filament_entry.delete(0,END)
 
-
+#Clear filaments button
 stored_filament_clear=tk.Button(window, text="Clear Filaments",command=clear_filaments)
 
 
@@ -99,15 +104,17 @@ value_inside_filament_choice=tk.StringVar(window)
 value_inside_filament_choice.set("Select an Option")
 filament_choice=tk.OptionMenu(window,value_inside_filament_choice,*saved_filaments_names)
 
+
+# I have no clue how this function works
 def filament_choice_reconstructor():
     global filament_choice
     global value_inside_filament_choice
     global saved_filaments_names
     global saved_filaments
-    filament_choice.option_add
+    filament_choice['menu'].delete(0,END)
     populate_stored_filaments(saved_filaments)
-    filament_choice.destroy()
-    filament_choice = tk.OptionMenu(window,value_inside_filament_choice,*saved_filaments_names)
+    for choices in saved_filaments_names:
+        filament_choice['menu'].add_command(label=choices, command= tk._setit(value_inside_filament_choice,choices))
 
 
 #Mass text
@@ -140,28 +147,38 @@ material_cost_text=tk.Label(text="Print's Material Cost: $"+str(outputs[2]),font
 
 #Function to get all the data from the text entries
 def data_retrieval(inputs):
-    inputs[0]=float(p_mass.get())
-    inputs[1]=float(pTime.get())
-    inputs[2]=float(dTime.get())
-    inputs[3]=float(eWage.get())
+    inputs[0]=float(p_mass.get()) # Print Mass
+    inputs[1]=float(pTime.get()) # Print Time
+    inputs[2]=float(dTime.get()) # Deisgn + Assembly Time
+    inputs[3]=float(eWage.get()) # Expected Wage
 
-#Function to calculate Cost and Price of Print   
+#Function to calculate Cost and Price of Print  
+# outputs[0]= Price
+# outputs[1]= Cost
+# outputs[2]= Material Cost
 def price_of_print(outputs):
     print("calculations Not done")
-    # outputs[0]= ((inputs[0]/inputs[1])*1.5*inputs[2]) +(inputs[5]*1.25*(inputs[4])/60)+(inputs[5]*1.25/60/6*inputs[3])
-    # outputs[1]=((inputs[0]/inputs[1])*inputs[2]) +(inputs[5]*inputs[4]/60)+(inputs[5]/60/6*inputs[3])
-    # outputs[2]=(inputs[0]/inputs[1])*inputs[2]
+    print(value_inside_filament_choice.get())
+
+    for i,x in enumerate(saved_filaments):
+        if saved_filaments[i].name == value_inside_filament_choice.get():
+            option=i
+
+
+    outputs[0]= ((saved_filaments[option].price/saved_filaments[option].mass)*1.5*inputs[0]) +(inputs[3]*1.25*(inputs[2])/60)+(inputs[3]*1.25/60/6*inputs[1])
+    outputs[1]=((saved_filaments[option].price/saved_filaments[option].mass)*inputs[0]) +(inputs[3]*inputs[2]/60)+(inputs[3]/60/6*inputs[1])
+    outputs[2]=(saved_filaments[option].price/saved_filaments[option].mass)*inputs[0]
 
 
 #Function to call both data_retrieval and price_of_print
 def button_click():
     print("Clicked")    
-    # data_retrieval(inputs)
-    # price_of_print(outputs)
+    data_retrieval(inputs)
+    price_of_print(outputs)
 
-    # price_text.configure(text="Price of print: $"+str(round(outputs[0],2)))
-    # cost_text.configure(text="Cost of print: $"+str(round(outputs[1],2)))
-    # material_cost_text.configure(text="Print's Material Cost: $"+str(round(outputs[2],2)))
+    price_text.configure(text="Price of print: $"+str(round(outputs[0],2)))
+    cost_text.configure(text="Cost of print: $"+str(round(outputs[1],2)))
+    material_cost_text.configure(text="Print's Material Cost: $"+str(round(outputs[2],2)))
 
 #Enter Button 
 enter_button= tk.Button(window,text="Calculate", command=button_click)
@@ -205,9 +222,6 @@ def main_callback():
     global last_page
     last_page=pricing_page
 
-def subpage_callback():
-    return "Submenu"
-
 def stored_filaments():
     global saved_filaments
     populate_stored_filaments(saved_filaments)
@@ -222,16 +236,14 @@ def insert_filament():
     global last_page
     last_page=insert_filament_page
 
-subpages=tk.Menu()
-subpages.add_command(label="Filament 1", command= subpage_callback)
 
 main=tk.Menu()
 main.add_command(label="Main",command=main_callback)
-#main.add_cascade(label="Filaments", menu= subpages)
+
+
 main.add_command(label="Stored Filaments", command=stored_filaments)
 main.add_command(label="Insert Filament", command=insert_filament)
 window.configure(menu=main)
-
 
 
 window.resizable(width= True,height=True)
