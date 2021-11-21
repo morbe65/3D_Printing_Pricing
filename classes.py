@@ -2,7 +2,7 @@ import pickle
 
 
 
-class Filament:
+class filament:
     def __init__(self, name, price, mass):
         self.name = name
         self.price = price
@@ -26,6 +26,8 @@ class page:
             i.forget()
 
 
+
+#Used to save filament data
 def save_object(obj):
     try:
         with open("data.pickle", "wb") as f:
@@ -33,6 +35,7 @@ def save_object(obj):
     except Exception as ex:
         print("Error during pickling object (Possibly unsupported): ",ex)
 
+#Used to load filament data
 def load_object(filename):
     try:
         with open(filename,"rb") as f:
