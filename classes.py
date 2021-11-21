@@ -1,4 +1,5 @@
 import pickle
+from tkinter import Button
 
 
 
@@ -14,12 +15,16 @@ class page:
         self.widgets=[]
     
     def addWidget(self,widgetName):
+        self.widgets.clear()
         for i in widgetName:
             self.widgets.append(i)
     
     def packWidgets(self):
         for i in self.widgets:
-            i.pack()
+            if(type(i)==Button):
+                i.pack(pady=5)
+            else:
+                i.pack()
 
     def forgetWidgets(self):
         for i in self.widgets:

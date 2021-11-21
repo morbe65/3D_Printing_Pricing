@@ -1,14 +1,13 @@
-from os import name
-from pickle import EMPTY_LIST
 import pickle
 import tkinter as tk
-from tkinter.constants import COMMAND, END, OUTSIDE, ROUND
+from os import name, path
+from pickle import EMPTY_LIST
+from tkinter.constants import COMMAND, END, GROOVE, LEFT, OUTSIDE, ROUND
 from typing import Sequence
+from ttkbootstrap import Style
 
 import classes
 from invoiceGenerator import invoiceGenerator
-
-
 
 ##Variable Declarations
 #Input Variables
@@ -24,24 +23,28 @@ cost=0
 material_cost=0
 outputs=[price,cost,material_cost]
 
+#Creating Bootstrap stuff
+style=Style(theme="darkly")
 
 #Creating the Tkinter window and naming it
-window= tk.Tk()
-window.title("3D Printing Pricing")
+window= style.master
+window.iconbitmap('LookOut.ico')
+window.title("3D Printing Invoices")
+
 
 
 
 ### Insert Filament Page
 #Filament Name Text
-f_name_text =tk.Label(window,text="Name of Filament", font=("Helvetica 15"))
+f_name_text =tk.Label(window,text="Name of Filament")
 #Filament Name Entry
-f_name=tk.Entry(width = 20)
+f_name=tk.Entry(width = 20,justify=tk.LEFT)
 #Filament Text
-f_purchase=tk.Label(window,text="Filament Purchase Price in $", font=("Helvetica 15"))
+f_purchase=tk.Label(window,text="Filament Purchase Price in $")
 #Filament Text Entry
-f_purchase_price=tk.Entry(width=20)
+f_purchase_price=tk.Entry(width=20,font="Arial 12")
 #Filament Mass Text
-f_mass_text=tk.Label(window,text="Filament Purchase Mass in g", font=("Helvetica 15"))
+f_mass_text=tk.Label(window,text="Filament Purchase Mass in g")
 #Filament Text Entry
 f_mass=tk.Entry(width=20)
 
@@ -62,8 +65,8 @@ f_save_button=tk.Button(window, text="Save",command=save_filament)
 
 ###Stored Filament Page
 saved_filaments=classes.load_object("data.pickle")
-stored_filament_listbox=tk.Listbox(window,width=50)
-stored_filament_entry=tk.Entry(width=38)
+stored_filament_listbox=tk.Listbox(window,width=75,height=10)
+stored_filament_entry=tk.Entry(width=39)
 stored_filament_entry.insert(0,"Which filament # would you like to delete?")
 saved_filaments_names=[]
 
@@ -74,7 +77,7 @@ def populate_stored_filaments(saved_filaments):
         saved_filaments_names.clear()
         stored_filament_listbox.delete(0,END)
         for i,x in enumerate(saved_filaments):
-            stored_filament_listbox.insert(i,"Filament {}-- Name: {} Price: {} Mass: {}".format(i+1,x.name,x.price,x.mass))
+            stored_filament_listbox.insert(i,"Filament {} -- Name: {} -- Price: {} -- Mass: {}".format(i+1,x.name,x.price,x.mass))
             saved_filaments_names.append(x.name)
     else:
         stored_filament_listbox.insert("No Filaments Saved")
@@ -100,11 +103,12 @@ stored_filament_clear=tk.Button(window, text="Clear Filaments",command=clear_fil
 
 ###For Main Page
 #Filament Choice Text
-filament_choice_text=tk.Label(text="Type of Filament", font=("Helvetica 15"))
+filament_choice_text=tk.Label(text="Type of Filament")
 #Filament Choice
 value_inside_filament_choice=tk.StringVar(window)
 value_inside_filament_choice.set("Select an Option")
 filament_choice=tk.OptionMenu(window,value_inside_filament_choice,*saved_filaments_names)
+filament_choice.configure(borderwidth=0)
 
 
 # I have no clue how this function works
@@ -120,31 +124,31 @@ def filament_choice_reconstructor():
 
 
 #Mass text
-p_text_mass= tk.Label(window, text="Mass of Print in g", font=("Helvetica 15"))
+p_text_mass= tk.Label(window, text="Mass of Print in g")
 #Mass Text Entry
 p_mass= tk.Entry(window, width= 16)
 
 #Print Time Text
-pTime_text=tk.Label(window, text="Print Time in mins", font=("Helvetica 15"))
+pTime_text=tk.Label(window, text="Print Time in mins")
 #Print Time Text Entry
 pTime= tk.Entry(window,width=22)
 
 #Design Time Text
-dTime_text=tk.Label(window, text="Deisgn + Assembly Time in min", font=("Helvetica 15"))
+dTime_text=tk.Label(window, text="Deisgn + Assembly Time in min")
 #Design Time Text Entry
 dTime= tk.Entry(window,width=24)
 
 #Expected Wage Text
-eWage_text=tk.Label(window, text="Expected Wage in $/hr", font=("Helvetica 15"))
+eWage_text=tk.Label(window, text="Expected Wage in $/hr")
 #Design Time Text Entry
 eWage= tk.Entry(window,width=21)
 
 #Price Text
-price_text=tk.Label(text="Price of print: $"+str(outputs[0]), font=("Helvetica 15"))
+price_text=tk.Label(text="Price of print: $"+str(outputs[0]))
 #Cost Text
-cost_text=tk.Label(text="Cost of print: $"+str(outputs[1]), font=("Helvetica 15"))
+cost_text=tk.Label(text="Cost of print: $"+str(outputs[1]))
 #Material Cost
-material_cost_text=tk.Label(text="Print's Material Cost: $"+str(outputs[2]),font=("Helvetica 15"))
+material_cost_text=tk.Label(text="Material cost of print: $"+str(outputs[2]))
 
 
 #Function to get all the data from the text entries
@@ -180,7 +184,7 @@ def button_click():
 
     price_text.configure(text="Price of print: ${:.2f}".format(outputs[0]))
     cost_text.configure(text="Cost of print: ${:.2f}".format(outputs[0]))
-    material_cost_text.configure(text="Print's Material Cost: ${:.2f}".format(outputs[0]))
+    material_cost_text.configure(text="Material cost of print: ${:.2f}".format(outputs[0]))
     global pricing_page
     pricing_page.addWidget(pricing_page_list2)
     pricing_page.packWidgets()
@@ -240,6 +244,8 @@ def forget_last_page():
 
 
 def main_callback():
+    pricing_page.addWidget(pricing_page_list)
+    pricing_page.packWidgets()
     filament_choice_reconstructor()
     forget_last_page()
     pricing_page.packWidgets()
