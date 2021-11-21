@@ -1,3 +1,4 @@
+from os import name
 from pickle import EMPTY_LIST
 import pickle
 import tkinter as tk
@@ -5,6 +6,7 @@ from tkinter.constants import COMMAND, END, OUTSIDE, ROUND
 from typing import Sequence
 
 import classes
+from invoiceGenerator import invoiceGenerator
 
 
 
@@ -176,12 +178,30 @@ def button_click():
     data_retrieval(inputs)
     price_of_print(outputs)
 
-    price_text.configure(text="Price of print: $"+str(round(outputs[0],2)))
-    cost_text.configure(text="Cost of print: $"+str(round(outputs[1],2)))
-    material_cost_text.configure(text="Print's Material Cost: $"+str(round(outputs[2],2)))
+    price_text.configure(text="Price of print: ${:.2f}".format(outputs[0]))
+    cost_text.configure(text="Cost of print: ${:.2f}".format(outputs[0]))
+    material_cost_text.configure(text="Print's Material Cost: ${:.2f}".format(outputs[0]))
+    global pricing_page
+    pricing_page.addWidget(pricing_page_list2)
+    pricing_page.packWidgets()
+
 
 #Enter Button 
 enter_button= tk.Button(window,text="Calculate", command=button_click)
+
+#Name of Project
+name_of_project_text=tk.Label(text="Name of Project")
+name_of_project_entry=tk.Entry()
+
+#Name of Client
+name_of_client_text=tk.Label(text="Name of Client")
+name_of_client_entry=tk.Entry()
+
+#Generate Invoice Button
+def generate_customer_invoice():
+    invoiceGenerator(name_of_client_entry.get(),name_of_project_entry.get(), outputs[0]).generate()
+
+generateInvoice= tk.Button(text="Generate Invoice",command=generate_customer_invoice)
 
 
 
@@ -194,6 +214,7 @@ insert_filament_page.addWidget(insert_filament_page_list)
 
 #Pricing Widegt Page List
 pricing_page_list= [filament_choice_text,filament_choice,p_text_mass,p_mass,pTime_text,pTime,dTime_text,dTime,eWage_text,eWage,enter_button,price_text,cost_text,material_cost_text]
+pricing_page_list2= [filament_choice_text,filament_choice,p_text_mass,p_mass,pTime_text,pTime,dTime_text,dTime,eWage_text,eWage,enter_button,price_text,cost_text,material_cost_text,name_of_project_text,name_of_project_entry,name_of_client_text,name_of_client_entry,generateInvoice]
 #Pricing Page Instance
 pricing_page= classes.page()
 pricing_page.addWidget(pricing_page_list)
@@ -203,6 +224,9 @@ pricing_page.packWidgets()
 stored_filaments_page_list=[stored_filament_listbox,stored_filament_entry,stored_filament_clear]
 stored_filaments_page=classes.page()
 stored_filaments_page.addWidget(stored_filaments_page_list)
+
+
+
 
 
 
@@ -244,6 +268,7 @@ main.add_command(label="Main",command=main_callback)
 main.add_command(label="Stored Filaments", command=stored_filaments)
 main.add_command(label="Insert Filament", command=insert_filament)
 window.configure(menu=main)
+
 
 
 window.resizable(width= True,height=True)
