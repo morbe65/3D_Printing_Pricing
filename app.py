@@ -183,8 +183,8 @@ def button_click():
     price_of_print(outputs)
 
     price_text.configure(text="Price of print: ${:.2f}".format(outputs[0]))
-    cost_text.configure(text="Cost of print: ${:.2f}".format(outputs[0]))
-    material_cost_text.configure(text="Material cost of print: ${:.2f}".format(outputs[0]))
+    cost_text.configure(text="Cost of print: ${:.2f}".format(outputs[1]))
+    material_cost_text.configure(text="Material cost of print: ${:.2f}".format(outputs[2]))
     global pricing_page
     pricing_page.addWidget(pricing_page_list2)
     pricing_page.packWidgets()
